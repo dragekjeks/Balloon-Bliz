@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#17102d">
+  <meta name="description" content="Balloon Blitz! A ridiculous, colorful multiplayer balloon battle in your browser. Grab a blaster and pop!">
+  <title>Balloon Blitz! — Bubble Battle Royale</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="importmap">{
+    "imports": {
+      "three": "/vendor/three/build/three.module.js",
+      "three/addons/": "/vendor/three/examples/jsm/"
+    }
+  }</script>
+</head>
+<body>
+  <div id="game" aria-label="Three-dimensional game arena"></div>
+  <div id="vignette" class="vignette"></div>
+  <div id="damage-flash"></div>
+  <div id="crosshair" class="hidden"><span class="hair top"></span><span class="hair bottom"></span><span class="hair left"></span><span class="hair right"></span><span class="hair center"></span></div>
+  <div id="hitmarker" aria-hidden="true">✦</div>
+  <div id="toast-wrap"></div>
+
+  <header id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="mark small-mark"><span class="bubble-logo">●</span> BALLOON<span>BLITZ!</span></div>
+      <div class="room-line">ROOM <strong id="room-label">-----</strong> <button class="tiny-copy" id="copy-room" title="Copy invitation link">↗ SHARE</button></div>
+    </div>
+    <div class="top-center"><div class="mode-text">FREE-FOR-ALL • ROUND <span id="round-number">1</span></div><div id="clock">05:00</div></div>
+    <div class="hud-right"><div class="stat-label">PLAYERS ONLINE</div><div class="online-pill"><span class="online-dot"></span><span id="online">1</span> <span class="online-muted">+ BOTS</span></div></div>
+  </header>
+
+  <aside id="leaderboard" class="hidden">
+    <div class="board-head"><span>THE POP CHART</span><span>POPS</span></div>
+    <div id="leaders"></div>
+  </aside>
+  <div id="feed" class="hidden"></div>
+  <div id="scoreboard" class="hidden"><div class="score-inner"><h2>THE POP CHART</h2><div class="subtitle">Press TAB to close</div><div id="score-rows"></div></div></div>
+
+  <footer id="bottom-hud" class="hidden">
+    <div class="player-info"><div class="player-avatar">😊</div><div class="life-panel"><div class="sub-label">BALLOON HEALTH</div><div class="life-row"><div class="heart">♥</div><span id="health-value">100</span><span class="small-max">/ 100</span></div><div class="life-track"><div id="life-fill"></div></div></div></div>
+    <div class="bottom-hint"><span><kbd>WASD</kbd> MOVE</span><span><kbd>SPACE</kbd> JUMP</span><span><kbd>SHIFT</kbd> RUN</span><span><kbd>R</kbd> RELOAD</span><span><kbd>ESC</kbd> PAUSE</span></div>
+    <div class="ammo-panel"><div class="sub-label" id="ammo-label">BUBBLE BLASTER</div><div class="ammo-row"><span id="ammo">14</span><span class="ammo-divider">/</span><span class="ammo-capacity">14</span><span class="ammo-icon">●●●</span></div><div class="reload-bar"><div id="reload-fill"></div></div></div>
+  </footer>
+  <div id="respawn" class="hidden"><div class="big-pop">POP!</div><div id="pop-by">You've been popped</div><div class="pulse-text">Reinflating...</div></div>
+  <div id="round-end" class="hidden"><div class="confetti-title">ROUND COMPLETE!</div><h2 id="winner-name">Somebody</h2><p id="winner-score">won the pop-off!</p></div>
+
+  <main id="menu" class="overlay">
+    <div class="corner-decoration corner-1"></div><div class="corner-decoration corner-2"></div>
+    <div class="float-balloon one"></div><div class="float-balloon two"></div><div class="float-balloon three"></div>
+    <div class="menu-main">
+      <div class="label-chip"><span class="pulse-dot"></span> THE MOST RIDICULOUS BATTLE ARENA</div>
+      <div class="brand-title"><span>BALLOON</span><span>BLITZ<span class="exclaim">!</span></span></div>
+      <p class="hero-desc">INFLATE. AIM. <b>POP!</b><br><span>Battle your friends in a candy-colored 3D arena.<br>Everybody's made of balloons. Nobody stays popped for long.</span></p>
+      <div class="join-card">
+        <div class="join-heading">READY TO POP OFF? <span>🎈</span></div>
+        <label for="nickname">YOUR BALLOON NAME</label>
+        <input id="nickname" maxlength="18" autocomplete="nickname" placeholder="Captain Bubbles" value="Captain Bubbles">
+        <label for="room">ROOM CODE <small>(leave blank to create a room)</small></label>
+        <div class="room-input-row"><input id="room" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="NEW ROOM"><button id="random-room" title="Create a new room" type="button">↻</button></div>
+        <button id="play" class="primary-btn"><span>LET'S POP!</span><span>➜</span></button>
+        <div id="connection-note" class="join-note">No sign-up. No download. Just balloons.</div>
+      </div>
+      <div class="feature-strip"><span>◎ REAL MULTIPLAYER</span><span>✦ 3D BALLOON ARENA</span><span>♧ BOT OPPONENTS</span></div>
+    </div>
+    <div class="menu-footer">BUILT FOR MAXIMUM FUN AND MINIMUM DRAMA <span>✹</span> BEST ON DESKTOP • TOUCH CONTROLS SUPPORTED</div>
+  </main>
+
+  <div id="pause" class="overlay hidden"><div class="pause-card"><div class="pause-kicker">🎈 BALLOON BREAK</div><h1>PAUSED!</h1><p>Ready to get back to popping?</p><button id="resume" class="primary-btn"><span>BACK TO THE ACTION</span><span>➜</span></button><button id="share-pause" class="secondary-btn">COPY INVITE LINK ↗</button><div class="pause-hint">CLICK TO LOCK THE CURSOR • ESC TO PAUSE</div></div></div>
+
+  <div id="touch-ui" class="hidden">
+    <div id="touch-stick"><div class="stick-base"><div id="stick-knob"></div></div></div>
+    <button id="touch-fire" class="touch-action">FIRE!</button><button id="touch-jump" class="touch-action">JUMP</button><button id="touch-reload" class="touch-action">↻</button>
+  </div>
+  <div id="loading-screen" class="hidden"><div class="loading-wheel">🎈</div><div>INFLATING THE ARENA...</div><div id="load-progress">Almost there</div></div>
+
+  <script type="module" src="/game.js"></script>
+</body>
+</html>

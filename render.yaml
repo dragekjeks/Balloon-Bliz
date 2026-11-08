@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: balloon-blitz-arena
+    runtime: node
+    plan: starter
+    buildCommand: npm install && (npm run fetch:models || true)
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
